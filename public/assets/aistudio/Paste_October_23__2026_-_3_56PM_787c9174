@@ -1,0 +1,2312 @@
+
+# PROJECT: CryptoPulse Intelligence
+## Full-Stack Crypto Market Intelligence and Trading Signals SaaS
+
+Act as a senior software architect, full-stack engineer, quantitative researcher, data engineer, cybersecurity engineer, and product designer.
+
+Build a production-oriented, full-stack cryptocurrency intelligence platform called CryptoPulse Intelligence. The platform must combine crypto news, ETF flow analytics, centralized exchange (CEX) liquidity, derivatives data, technical analysis, AI-assisted market interpretation, and explainable trading signals.
+
+This is a real application project, not just a landing page or static dashboard. Implement working database persistence, real API integrations, authentication, background jobs, subscription entitlements, analytics, tests, and deployment documentation.
+
+Do not claim a feature is working until its implementation has been tested. When credentials or provider access are unavailable, provide a clearly labeled demo mode and an explicit setup path rather than inventing data.
+
+==================================================
+1. PRODUCT GOALS
+==================================================
+
+Build a platform with these objectives:
+
+1. Provide a public cryptocurrency market dashboard.
+2. Aggregate and categorize reputable crypto and macroeconomic news.
+3. Track US spot Bitcoin and Ethereum ETF flows and fund-level data.
+4. Monitor CEX order books, spreads, market depth and liquidity imbalances.
+5. Analyze derivatives funding rates, open interest and liquidations.
+6. Generate explainable LONG, SHORT and NEUTRAL signals.
+7. Combine technical indicators, ETF flows, order-book liquidity, derivatives and AI-assisted news analysis.
+8. Provide backtesting, paper trading, alerts and strategy analytics.
+9. Offer premium subscriptions with server-enforced feature access.
+10. Provide an admin panel for data sources, users, subscriptions, assets, signals and system health.
+
+Initial asset coverage:
+- Bitcoin (BTC)
+- Ethereum (ETH)
+- Solana (SOL)
+- Configurable major altcoins, including XRP, BNB, DOGE, LINK and other liquid assets supported by selected providers.
+
+Support configurable spot and perpetual-futures markets. Clearly identify the exchange, market type, quote currency and instrument symbol for each dataset.
+
+The initial product is an analytics and research platform. Do not enable live order execution by default.
+
+==================================================
+2. USER ROLES AND SUBSCRIPTIONS
+==================================================
+
+Implement three roles:
+
+A. Public visitor
+- Access public market overview.
+- Read permitted news articles and summaries.
+- View selected price charts and market statistics.
+- View a limited number of signals with appropriately disclosed delays or restrictions.
+- View public educational content and methodology documentation.
+- Register and subscribe to premium plans.
+
+B. Premium member
+- Access detailed ETF flow dashboards.
+- Access advanced liquidity and derivatives analytics.
+- View full signal rationales, entry zones and risk levels.
+- Configure watchlists, filters and alert thresholds.
+- Receive email and optional Telegram notifications.
+- Access historical signal performance and eligible backtesting features.
+- Save preferred assets and timeframes.
+- View personal alert and signal history.
+
+C. Administrator
+- Manage users, roles, plans and subscription entitlements.
+- Configure market data and news providers.
+- Inspect ingestion status, failed jobs and data freshness.
+- Manage asset listings and signal thresholds.
+- Review system logs and audit events.
+- Control feature flags, rate limits and maintenance mode.
+- Reprocess failed ingestion jobs.
+- View subscription and usage analytics.
+
+Use explicit server-side authorization for every protected API and operation. Hiding a button in the frontend is not authorization.
+
+Suggested plans:
+- Free: market overview, basic news and delayed or limited analytics.
+- Pro: complete market analytics, detailed signals and alerts.
+- Premium: advanced liquidity analytics, custom watchlists, expanded historical analysis and additional strategy tools.
+
+Make prices, billing periods, usage limits and entitlements configurable. Do not hardcode subscription prices throughout the application.
+
+==================================================
+3. REQUIRED PAGES AND USER INTERFACE
+==================================================
+
+Create a responsive, professional institutional trading-terminal interface.
+
+Visual direction:
+- Dark navy/charcoal background.
+- Clean typography and compact data tables.
+- Green for positive movements, red for negative movements and neutral gray for unavailable data.
+- Accessible contrast and keyboard navigation.
+- Responsive layouts for desktop, tablet and mobile.
+- Interactive charts, sortable tables, filters, tooltips and date selectors.
+- Consistent loading, empty, stale-data and error states.
+
+Required routes:
+
+/
+Public landing page, product introduction, market highlights, feature overview, pricing and calls to action.
+
+/dashboard
+Market overview with BTC, ETH, SOL and selected altcoins; market capitalization; trading volume; market breadth; volatility; sentiment; ETF flows; recent news; liquidity alerts; and active signals.
+
+/markets
+Searchable asset list, prices, percentage changes, volume, volatility and market charts.
+
+/markets/[symbol]
+Asset detail page with candlestick charts, technical indicators, market structure, trading volume, multi-timeframe analysis and related signals.
+
+/news
+Searchable, filterable news feed with categories, sources, timestamps, AI summaries and market relevance.
+
+/news/[slug]
+News detail or attributed source summary with the original publisher link, related stories, extracted entities and a clearly labeled impact assessment.
+
+/etf-flows
+Daily BTC and ETH ETF flows, individual fund breakdowns, cumulative flows, date filters, historical comparisons and flow-versus-price charts.
+
+/liquidity
+CEX order-book depth, bid-ask spreads, order-book imbalance, liquidity changes and exchange comparisons.
+
+/derivatives
+Funding rates, open interest, futures basis, long/short metrics and liquidation history.
+
+/signals
+Signal feed with asset, direction, timeframe, entry zone, stop-loss, targets, confidence, risk/reward, status and supporting evidence.
+
+/signals/[id]
+Detailed signal thesis, indicator readings, relevant news, ETF flow context, liquidity evidence, invalidation conditions and subsequent outcome tracking.
+
+/backtesting
+Strategy configuration, historical simulation, equity curves, performance statistics, cost assumptions and out-of-sample results.
+
+/watchlists
+Saved assets, custom filters and personalized alerts.
+
+/pricing
+Plan comparison, billing intervals, feature entitlements and subscription management.
+
+/account
+Profile, security, watchlists, notification preferences, billing and connected services.
+
+/admin
+Protected administrative workspace for data sources, users, plans, ingestion jobs, system health and audit history.
+
+Use reusable components, consistent route layouts, server-side data fetching where appropriate and client-side interactivity for charts and filters.
+
+==================================================
+4. DATA PROVIDERS AND INTEGRATIONS
+==================================================
+
+Create a modular provider architecture. Never couple business logic directly to a single vendor's response format.
+
+Use provider interfaces such as:
+- MarketDataProvider
+- ExchangeOrderBookProvider
+- DerivativesDataProvider
+- ETFFlowProvider
+- NewsProvider
+- OnChainDataProvider
+- NotificationProvider
+- BillingProvider
+
+Every provider adapter must normalize data into internal schemas, validate responses, record source timestamps and handle failures.
+
+A. Market prices and candles
+
+Evaluate:
+- Binance public market data and WebSocket streams.
+- Coinbase market data.
+- CoinGecko market data.
+- Other licensed aggregators where historical coverage or multi-exchange normalization is required.
+
+Collect:
+- Last price and bid/ask where available.
+- OHLCV candles.
+- Trading volume.
+- Exchange and instrument metadata.
+- Historical price series.
+- Asset metadata and supported trading pairs.
+
+Use WebSockets for supported live streams and REST endpoints for historical queries, reconciliation and backfills.
+
+B. ETF flow data
+
+Evaluate:
+- Official ETF issuer disclosures.
+- Relevant exchange and regulatory filings.
+- Reputable ETF flow datasets and financial data vendors.
+- Licensed aggregators offering historical fund-level flow data.
+
+Collect, when available:
+- Fund name and ticker.
+- Underlying asset.
+- Trading date.
+- Daily net flow.
+- Reported shares outstanding.
+- Net assets or AUM.
+- NAV and market price, where applicable.
+- Reporting status and publication timestamp.
+- Original source and methodology.
+
+Important:
+- Do not assume that all official issuer websites provide standardized daily flow APIs.
+- Use a documented vendor adapter or carefully validated source-specific ingestion process.
+- Do not infer exact flows solely from asset-price changes.
+- Do not equate ETF trading volume with net creations or redemptions.
+- Store preliminary and finalized observations separately where appropriate.
+- Do not label an estimate as an official reported figure.
+- Record methodology and source attribution for all derived estimates.
+
+Display the observation date separately from the ingestion timestamp. Clearly disclose missing, delayed, estimated and revised data.
+
+C. CEX liquidity
+
+Initially support selected venues such as Binance, Coinbase, OKX, Bybit and Kraken, subject to actual API availability, jurisdiction, rate limits and product support.
+
+Collect supported data:
+- Best bid and ask.
+- Mid-price and spread.
+- Order-book snapshots and incremental updates.
+- Bid and ask depth at configurable basis-point distances.
+- Order-book imbalance.
+- Trades and trade volume.
+- Cross-exchange price differences.
+- Liquidity changes and concentration.
+- Historical snapshots for backtesting.
+
+Calculate:
+mid_price = (best_bid + best_ask) / 2
+
+spread_bps = ((best_ask - best_bid) / mid_price) * 10000
+
+bid_depth_usd = sum(bid_price * bid_quantity) over qualifying bid levels
+
+ask_depth_usd = sum(ask_price * ask_quantity) over qualifying ask levels
+
+depth_imbalance =
+(bid_depth_usd - ask_depth_usd) /
+(bid_depth_usd + ask_depth_usd)
+
+Use consistent depth thresholds and quote-currency normalization.
+
+Label the precise depth definition, such as within 10, 25 or 50 basis points of mid-price. Do not combine incompatible exchanges or instruments without normalization.
+
+A visible order book is not proof of executable liquidity. Large orders can be canceled, and displayed depth may not represent hidden liquidity.
+
+D. Derivatives
+
+Evaluate exchange-native futures APIs and licensed derivatives analytics providers.
+
+Collect, where supported:
+- Funding rates and funding intervals.
+- Open interest.
+- Futures basis.
+- Liquidation events or aggregated liquidation statistics.
+- Long/short ratios with documented definitions.
+- Contract specifications and mark/index prices.
+
+Keep each exchange's instrument type and methodology identifiable. Do not combine different units or definitions without normalization.
+
+E. News
+
+Evaluate:
+- Licensed news APIs.
+- Publisher RSS feeds where permitted.
+- Official project and exchange announcements.
+- Regulatory and central-bank releases.
+- Public company and ETF disclosures.
+
+Store:
+- Headline and original URL.
+- Publisher.
+- Publication timestamp.
+- Ingestion timestamp.
+- Language and category.
+- Asset and entity tags.
+- Content license or source type.
+- Short summary, where permitted.
+- Sentiment and potential impact assessments.
+- Duplicate-cluster identifier.
+
+Respect publisher licensing, API terms, copyright and attribution. Do not republish full copyrighted articles without authorization.
+
+F. On-chain data
+
+Optionally integrate a reputable blockchain analytics provider for:
+- Exchange inflows and outflows.
+- Exchange reserves.
+- Stablecoin supply and transfers.
+- Whale transaction monitoring.
+
+Clearly disclose that exchange-wallet labels are estimates and that incomplete wallet attribution can distort inferred exchange flows.
+
+G. Provider selection
+
+Before finalizing each provider, document:
+- Available endpoints.
+- Authentication requirements.
+- Historical coverage.
+- Update frequency.
+- Rate limits.
+- Pricing and usage restrictions.
+- Attribution and redistribution requirements.
+- Supported assets and exchanges.
+
+Build the application so an unavailable provider can be replaced without rewriting the UI or signal engine.
+
+Use mock data only in explicitly labeled development/demo mode.
+
+==================================================
+5. DATA INGESTION AND PROCESSING ARCHITECTURE
+==================================================
+
+Implement a reliable data pipeline.
+
+Suggested workflow:
+
+Exchange REST/WebSocket APIs
+    -> Provider adapters
+    -> Validation and normalization
+    -> Event queue or scheduled job runner
+    -> PostgreSQL and time-series storage
+    -> Derived metrics and feature calculations
+    -> Signal engine
+    -> Cached API responses
+    -> Frontend dashboards and alerts
+
+Implement:
+- Scheduled jobs for ETF flows and news.
+- WebSocket consumers for supported market data.
+- Periodic REST reconciliation.
+- Retry with exponential backoff and jitter.
+- Idempotent ingestion.
+- Deduplication.
+- Provider-specific rate limiting.
+- Data freshness tracking.
+- Dead-letter handling for repeated failures.
+- Structured logs and metrics.
+- Historical backfills.
+- Graceful degradation when providers fail.
+
+Do not make the main dashboard wait for every provider. Return available data promptly and identify missing components.
+
+Use separate freshness thresholds for prices, order books, derivatives, news and ETF data.
+
+When required data is stale, disable affected signals rather than silently substituting old values.
+
+==================================================
+6. DATABASE SCHEMA
+==================================================
+
+Use PostgreSQL as the primary relational database. Use TimescaleDB for high-volume time-series data if the deployment supports it and the operational cost is justified.
+
+Create migrations, indexes, foreign keys, constraints and appropriate retention policies.
+
+Core tables:
+
+users
+- id UUID PRIMARY KEY
+- email UNIQUE NOT NULL
+- password_hash if password authentication is used
+- display_name
+- role
+- email_verified_at
+- created_at
+- updated_at
+
+auth_sessions
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- token_hash
+- expires_at
+- created_at
+
+plans
+- id UUID PRIMARY KEY
+- name
+- billing_interval
+- price_amount
+- currency
+- provider_price_id
+- is_active
+- created_at
+
+subscriptions
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- plan_id UUID REFERENCES plans(id)
+- billing_provider
+- provider_customer_id
+- provider_subscription_id
+- status
+- current_period_start
+- current_period_end
+- cancel_at_period_end
+- created_at
+- updated_at
+
+subscription_events
+- id UUID PRIMARY KEY
+- subscription_id UUID REFERENCES subscriptions(id)
+- provider_event_id UNIQUE
+- event_type
+- payload_json
+- processed_at
+- created_at
+
+assets
+- id UUID PRIMARY KEY
+- symbol
+- name
+- canonical_asset_id
+- network
+- is_active
+- metadata_json
+- created_at
+
+instruments
+- id UUID PRIMARY KEY
+- asset_id UUID REFERENCES assets(id)
+- exchange
+- exchange_symbol
+- market_type
+- quote_currency
+- is_active
+- metadata_json
+
+market_candles
+- instrument_id UUID REFERENCES instruments(id)
+- timeframe
+- open_time
+- close_time
+- open
+- high
+- low
+- close
+- volume
+- quote_volume
+- source
+- ingested_at
+
+Use a composite unique key on instrument_id, timeframe and open_time.
+
+market_tickers
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- price
+- bid
+- ask
+- volume_24h
+- change_24h
+- observed_at
+- ingested_at
+- source
+
+orderbook_snapshots
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- exchange
+- bids_json
+- asks_json
+- sequence_id
+- mid_price
+- spread_bps
+- bid_depth_json
+- ask_depth_json
+- imbalance
+- observed_at
+- ingested_at
+
+Persist raw book snapshots only at an appropriate sampling frequency. Store incremental events or derived features where full snapshots would be too expensive.
+
+derivatives_metrics
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- funding_rate
+- open_interest
+- open_interest_unit
+- futures_basis
+- liquidation_long_usd
+- liquidation_short_usd
+- observed_at
+- source
+
+etf_funds
+- id UUID PRIMARY KEY
+- ticker
+- fund_name
+- underlying_asset_id UUID REFERENCES assets(id)
+- issuer
+- is_active
+
+etf_flow_observations
+- id UUID PRIMARY KEY
+- fund_id UUID REFERENCES etf_funds(id)
+- observation_date
+- net_flow_usd
+- aum_usd
+- nav
+- shares_outstanding
+- publication_status
+- source
+- source_url
+- observed_at
+- ingested_at
+- methodology_version
+
+Use a unique key appropriate to the fund, observation date and source/version. Support corrections without silently overwriting source history.
+
+news_articles
+- id UUID PRIMARY KEY
+- canonical_url UNIQUE
+- title
+- publisher
+- published_at
+- ingested_at
+- category
+- language
+- summary
+- source_type
+- content_rights
+- metadata_json
+
+news_asset_mentions
+- article_id UUID REFERENCES news_articles(id)
+- asset_id UUID REFERENCES assets(id)
+- relevance_score
+- sentiment_score
+- impact_score
+
+technical_features
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- timeframe
+- candle_time
+- ema_20
+- ema_50
+- ema_200
+- rsi_14
+- macd
+- macd_signal
+- atr_14
+- vwap
+- feature_version
+
+signals
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- timeframe
+- direction
+- entry_min
+- entry_max
+- stop_loss
+- take_profit_1
+- take_profit_2
+- take_profit_3
+- confidence_score
+- risk_reward
+- methodology_version
+- rationale_json
+- status
+- created_at
+- expires_at
+- invalidated_at
+
+signal_features
+- id UUID PRIMARY KEY
+- signal_id UUID REFERENCES signals(id)
+- feature_name
+- feature_value
+- normalized_score
+- source
+- observed_at
+
+signal_outcomes
+- id UUID PRIMARY KEY
+- signal_id UUID REFERENCES signals(id)
+- evaluation_window
+- entry_fill_assumption
+- exit_reason
+- gross_return
+- net_return
+- max_favorable_excursion
+- max_adverse_excursion
+- fees
+- slippage
+- evaluated_at
+
+watchlists
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- name
+- created_at
+
+watchlist_assets
+- watchlist_id UUID REFERENCES watchlists(id)
+- asset_id UUID REFERENCES assets(id)
+
+alerts
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- alert_type
+- configuration_json
+- channels_json
+- enabled
+- cooldown_seconds
+- last_triggered_at
+- created_at
+
+notifications
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- alert_id UUID REFERENCES alerts(id)
+- event_type
+- payload_json
+- status
+- sent_at
+- created_at
+
+data_provider_configs
+- id UUID PRIMARY KEY
+- provider_name
+- provider_type
+- enabled
+- public_config_json
+- secret_reference
+- last_success_at
+- last_error_at
+- health_status
+
+ingestion_runs
+- id UUID PRIMARY KEY
+- provider_name
+- job_type
+- started_at
+- completed_at
+- status
+- records_processed
+- records_failed
+- error_summary
+
+audit_logs
+- id UUID PRIMARY KEY
+- actor_user_id UUID
+- action
+- resource_type
+- resource_id
+- metadata_json
+- created_at
+
+Use database constraints to prevent invalid values. Add indexes for asset, instrument, source, timeframe, observation time, publication date and frequently queried status fields.
+
+Store monetary values with appropriate decimal precision. Use UTC timestamps in storage and convert to the user's preferred timezone for display.
+
+Keep secrets outside the database wherever possible. Never store plaintext passwords, raw authentication tokens or private API credentials.
+
+==================================================
+7. SIGNAL ENGINE: TECHNICAL + ETF + LIQUIDITY + AI
+==================================================
+
+Build a deterministic, testable signal engine. AI can interpret evidence, but it must not invent numeric observations or override mandatory risk controls.
+
+A. Technical analysis: initial weight 30%
+
+Calculate:
+- EMA 20, 50 and 200.
+- RSI.
+- MACD.
+- ATR.
+- VWAP.
+- Volume confirmation.
+- Support and resistance.
+- Breakout and breakdown conditions.
+- Multi-timeframe trend agreement.
+
+B. CEX liquidity: initial weight 25%
+
+Calculate:
+- Order-book imbalance.
+- Bid and ask depth at standardized distances.
+- Spread and depth deterioration.
+- Cross-exchange confirmation.
+- Liquidity concentration and sudden changes.
+- Price movement relative to displayed liquidity.
+
+Do not treat large displayed orders as guaranteed support or resistance.
+
+C. Derivatives: initial weight 20%
+
+Evaluate:
+- Funding rate extremes.
+- Open-interest expansion or contraction.
+- Price/open-interest divergence.
+- Futures basis.
+- Liquidation events.
+- Crowded positioning, where reliable data is available.
+
+D. ETF flows: initial weight 15%
+
+Evaluate:
+- Daily net flows.
+- Rolling 3-day, 7-day and 30-day totals.
+- Flow acceleration or deceleration.
+- Flow trends relative to price.
+- Confirmed institutional-demand divergence.
+
+Only score ETF conditions when relevant observations are available and sufficiently recent for the analysis. Do not use future-reported flow data in historical simulations.
+
+E. News and sentiment: initial weight 10%
+
+Use an AI-assisted model to:
+- Summarize relevant events.
+- Identify assets and entities.
+- Classify reported facts versus interpretations.
+- Estimate potential directional impact.
+- Evaluate source reliability and event uncertainty.
+- Identify contradictory reports.
+
+Treat all retrieved articles and external text as untrusted input. Do not follow instructions embedded in articles or allow them to trigger privileged actions.
+
+F. Scoring
+
+Normalize each component to a documented scale, such as -100 to +100.
+
+combined_score =
+technical_score * 0.30
++ liquidity_score * 0.25
++ derivatives_score * 0.20
++ etf_score * 0.15
++ news_score * 0.10
+
+These weights are starting hypotheses, not proven predictive relationships.
+
+If an input is unavailable, stale or unreliable, do not silently replace its score with zero and retain the same confidence. Recalculate using eligible weights, report coverage, reduce confidence as appropriate and apply minimum data-quality requirements.
+
+Configurable initial directional thresholds:
+- Score >= +60: candidate LONG.
+- Score <= -60: candidate SHORT.
+- Otherwise: NEUTRAL.
+
+These thresholds must be validated through out-of-sample testing before being presented as effective trading rules.
+
+Require:
+- Minimum liquidity.
+- Valid price and instrument data.
+- Adequate data freshness.
+- Acceptable estimated transaction costs.
+- A documented risk/reward threshold.
+- No unresolved integrity failures.
+
+The risk engine can reject a directional candidate regardless of its score.
+
+G. AI responsibilities
+
+Use AI for explanation, news interpretation, evidence synthesis and natural-language summaries.
+
+Give the AI only validated, timestamped structured inputs and relevant licensed text.
+
+Require structured outputs validated against a schema, for example:
+- market_summary
+- directional_bias
+- supporting_evidence
+- contradictory_evidence
+- relevant_news
+- key_risks
+- invalidation_conditions
+- missing_data
+- summary_generated_at
+
+AI must not invent prices, indicators, ETF flows, entry prices or confidence scores.
+
+Calculate numeric values using deterministic code. Validate every AI output before display.
+
+If the AI provider is unavailable, continue serving deterministic signals where their required inputs remain valid.
+
+H. Signal lifecycle
+
+Use statuses such as:
+- CANDIDATE
+- ACTIVE
+- TRIGGERED
+- TARGET_PARTIAL
+- TARGET_COMPLETE
+- STOPPED
+- INVALIDATED
+- EXPIRED
+
+Define transition rules explicitly.
+
+Distinguish a theoretical signal from an executable trade. Define how entry-zone fills, partial exits, stop-losses and overlapping signals are evaluated.
+
+Persist the input feature snapshot and methodology version for every published signal.
+
+==================================================
+8. RISK MANAGEMENT AND PERFORMANCE
+==================================================
+
+Every directional signal must contain:
+- Asset and exchange/instrument.
+- Direction and timeframe.
+- Entry zone.
+- Stop-loss or invalidation level.
+- Take-profit levels.
+- Risk/reward calculation.
+- Confidence score and methodology.
+- Data coverage and freshness.
+- Creation and expiration timestamps.
+- Supporting and contradictory evidence.
+
+Use ATR or another documented volatility method to inform risk levels.
+
+Do not issue a directional signal when its required inputs are unavailable or its invalidation conditions cannot be defined.
+
+Provide optional position-size calculations based on user-entered account equity and risk percentage. Do not require users to connect a brokerage account.
+
+Backtesting requirements:
+- Include trading fees, slippage and funding where applicable.
+- Avoid look-ahead bias.
+- Use only information available at the simulated decision time.
+- Account for realistic entry fills and unfilled orders.
+- Separate training, validation and test periods.
+- Support walk-forward validation.
+- Include delisted assets where data is available to reduce survivorship bias.
+- Report sample size and uncertainty.
+
+Display:
+- Win rate.
+- Average win and loss.
+- Expectancy.
+- Profit factor.
+- Maximum drawdown.
+- Net returns.
+- Sharpe ratio where meaningful.
+- Trade count.
+- Fees and funding costs.
+- Performance by asset and timeframe.
+
+Never imply that a historical backtest guarantees future results.
+
+==================================================
+9. API DESIGN
+==================================================
+
+Use versioned API routes with validation and consistent error responses.
+
+Public endpoints:
+GET /api/v1/health
+GET /api/v1/markets
+GET /api/v1/markets/[symbol]
+GET /api/v1/markets/[symbol]/candles
+GET /api/v1/news
+GET /api/v1/etf-flows/summary
+GET /api/v1/signals/public
+
+Premium endpoints:
+GET /api/v1/etf-flows/funds
+GET /api/v1/liquidity/orderbook
+GET /api/v1/liquidity/depth
+GET /api/v1/derivatives
+GET /api/v1/signals
+GET /api/v1/signals/[id]
+GET /api/v1/backtests
+POST /api/v1/backtests
+GET /api/v1/watchlists
+POST /api/v1/watchlists
+POST /api/v1/alerts
+
+Account endpoints:
+GET /api/v1/account
+GET /api/v1/account/subscription
+POST /api/v1/billing/checkout
+POST /api/v1/billing/portal
+POST /api/v1/webhooks/billing
+
+Administrative endpoints:
+GET /api/v1/admin/providers
+GET /api/v1/admin/ingestion-runs
+GET /api/v1/admin/system-health
+POST /api/v1/admin/providers/[id]/test
+POST /api/v1/admin/ingestion-runs/[id]/retry
+
+Adapt route syntax to the chosen framework. Implement pagination, filtering, sorting, schema validation, authorization, rate limiting and appropriate caching.
+
+Never expose secrets or internal stack traces in API responses.
+
+==================================================
+10. TECHNOLOGY STACK
+==================================================
+
+Preferred stack:
+
+Frontend:
+- Next.js with App Router.
+- React and TypeScript.
+- Tailwind CSS.
+- A consistent accessible component library.
+- Lightweight Charts or another suitable financial charting library.
+
+Backend:
+- Next.js server routes for application APIs.
+- Python FastAPI for quantitative calculations and independent data-processing services where appropriate.
+- Pydantic or equivalent validation for Python service contracts.
+
+Database:
+- PostgreSQL.
+- TimescaleDB if justified for time-series workloads.
+- Redis for caching, distributed rate limiting and job coordination where appropriate.
+
+Background processing:
+- A durable job queue such as Celery with Redis or a managed queue.
+- Scheduled ingestion jobs.
+- Dedicated WebSocket consumers for supported exchanges.
+- Idempotent tasks and retry handling.
+
+Authentication:
+- A maintained authentication library or trusted identity provider.
+- Secure server-side sessions.
+- Email verification and password reset if passwords are supported.
+- Optional MFA for administrators.
+
+Payments:
+- Stripe or another suitable subscription provider.
+- Hosted checkout where possible.
+- Signed webhook verification.
+- Idempotent subscription event handling.
+- Server-side entitlement synchronization.
+
+Notifications:
+- Email provider.
+- Optional Telegram bot.
+- Browser notifications with explicit permission.
+
+Deployment:
+- Web application on a suitable managed hosting platform.
+- PostgreSQL and Redis on managed services where practical.
+- Background workers deployed separately from the frontend.
+- Centralized logs, monitoring, backups and error reporting.
+
+Keep the architecture modular. Do not add unnecessary microservices before the MVP requires them.
+
+==================================================
+11. SECURITY AND PRIVACY
+==================================================
+
+Implement:
+- Server-side role and subscription checks.
+- Secure session cookies.
+- CSRF protection where applicable.
+- Strict input validation.
+- Output encoding.
+- Content Security Policy.
+- Rate limiting.
+- SQL injection protection through parameterized queries or a safe ORM.
+- SSRF protection for any URL ingestion service.
+- Webhook signature verification.
+- Secrets management.
+- Dependency scanning.
+- Audit logging for sensitive administrative actions.
+- Database least-privilege permissions.
+- Automated backups and recovery testing.
+- Appropriate personal-data retention and deletion workflows.
+
+Never:
+- Put secret provider keys in client-side code.
+- Trust client-submitted subscription status.
+- Allow untrusted news or AI text to execute code.
+- Store exchange trading credentials unnecessarily.
+- Grant withdrawal permissions to any integration.
+- Execute live trades without explicit user authorization and appropriate safeguards.
+
+Use read-only market data credentials wherever possible.
+
+==================================================
+12. RELIABILITY AND OBSERVABILITY
+==================================================
+
+Implement a provider health dashboard showing:
+- Provider status.
+- Last successful fetch.
+- Latest observation timestamp.
+- Ingestion delay.
+- API quota or rate-limit status where available.
+- Consecutive failures.
+- Records processed and rejected.
+- Last error summary.
+
+Use explicit states:
+- LIVE: within a configured freshness threshold.
+- DELAYED: data exists but is older than the expected threshold.
+- STALE: data is too old for the intended calculation.
+- UNAVAILABLE: no usable observation exists.
+- ESTIMATED: derived value, with methodology disclosed.
+
+Define freshness thresholds per metric rather than using one global threshold.
+
+The UI must never imply that ETF data is live simply because price data is live.
+
+Add structured logging, error monitoring, queue monitoring and operational alerts.
+
+==================================================
+13. DEVELOPMENT MILESTONES
+==================================================
+
+Phase 1 — Foundation
+- Create repository structure and development documentation.
+- Set up Next.js, TypeScript, Tailwind and the database.
+- Implement migrations, seed data, authentication and authorization.
+- Create reusable UI components and application layouts.
+- Establish environment configuration and automated tests.
+
+Acceptance criteria:
+The application starts locally, migrations run successfully, users can register or sign in, and protected routes enforce access control.
+
+Phase 2 — Live market data
+- Implement exchange provider adapters.
+- Ingest BTC, ETH, SOL and supported altcoin prices.
+- Add candles, market overview and interactive charts.
+- Implement WebSocket updates where supported.
+- Add caching, retry logic, timestamps and provider health monitoring.
+
+Acceptance criteria:
+Prices and charts come from configured real providers, timestamps are visible, and provider failures are handled without fabricating values.
+
+Phase 3 — News and ETF flows
+- Implement news ingestion and deduplication.
+- Add categories, asset tags, summaries and source links.
+- Implement fund metadata and daily ETF flow ingestion.
+- Add daily and cumulative flow charts.
+- Add data-quality and reporting-status labels.
+
+Acceptance criteria:
+Users can filter news and ETF records, trace observations to sources and identify delayed, preliminary or missing data.
+
+Phase 4 — Liquidity and derivatives
+- Add order-book snapshots and normalized depth calculations.
+- Implement spreads, imbalance and exchange comparisons.
+- Add funding, open interest, futures basis and supported liquidation metrics.
+- Build historical feature storage and freshness validation.
+
+Acceptance criteria:
+Liquidity metrics have documented units and calculation methods. Inconsistent instruments and stale order books are not silently combined.
+
+Phase 5 — Signals and AI
+- Implement technical indicators.
+- Implement the weighted scoring model.
+- Add data-quality gates, risk controls and signal lifecycle management.
+- Integrate AI summaries using validated structured inputs.
+- Add signal history and supporting evidence.
+
+Acceptance criteria:
+Every published signal is reproducible from stored inputs and a methodology version. Missing required data prevents an unsupported signal from being published.
+
+Phase 6 — Membership and billing
+- Build pricing pages and configurable subscription plans.
+- Integrate hosted checkout and billing webhooks.
+- Implement premium entitlements and account management.
+- Add watchlists, email alerts and optional Telegram notifications.
+
+Acceptance criteria:
+Premium features are protected server-side, subscription changes are processed idempotently, and unauthorized requests cannot access paid endpoints.
+
+Phase 7 — Backtesting and quality assurance
+- Implement realistic historical simulations.
+- Add fees, slippage and funding assumptions.
+- Add performance metrics and out-of-sample validation.
+- Test for look-ahead bias, duplicate signals and invalid state transitions.
+- Conduct load, security and failure-recovery testing.
+
+Acceptance criteria:
+Backtests are reproducible, limitations are documented and hypothetical performance is clearly distinguished from live results.
+
+Phase 8 — Production launch
+- Configure production infrastructure.
+- Set up secrets, monitoring, backups and alerting.
+- Run database migration and recovery tests.
+- Validate billing, authentication, access control and provider integrations.
+- Publish documentation and operational runbooks.
+
+Acceptance criteria:
+A fresh deployment can be completed from documented instructions, critical integrations have health checks and failures produce actionable logs.
+
+==================================================
+14. REQUIRED TESTS
+==================================================
+
+Write automated unit, integration and end-to-end tests for:
+- Indicator calculations and candle boundaries.
+- Order-book imbalance and spread calculations.
+- ETF net flow aggregation and corrections.
+- Missing and stale data handling.
+- Signal score normalization.
+- Signal lifecycle transitions.
+- AI response schema validation.
+- Subscription entitlement enforcement.
+- Payment webhook signature verification and idempotency.
+- Authentication and authorization.
+- API rate limits.
+- Ingestion retries and duplicate records.
+- Historical backtesting without look-ahead bias.
+- Database migrations and indexes.
+
+Include representative fixture data, but keep all fixture data clearly separated from production datasets.
+
+==================================================
+15. REQUIRED DELIVERABLES
+==================================================
+
+Deliver:
+1. A working full-stack application.
+2. Complete source code and a clear repository structure.
+3. Database migrations and development seed scripts.
+4. Provider adapters with documented setup requirements.
+5. Functional market, news, ETF, liquidity and signals dashboards.
+6. Authentication, roles and premium subscription controls.
+7. Signal engine and documented scoring methodology.
+8. Background jobs and ingestion monitoring.
+9. Unit, integration and end-to-end tests.
+10. .env.example with variable names and placeholder values only.
+11. Docker Compose or equivalent local development instructions where appropriate.
+12. Deployment guide and database backup/restore instructions.
+13. API documentation.
+14. Security and data-source documentation.
+15. An implementation status report identifying completed, tested, blocked and unimplemented features.
+
+==================================================
+16. EXECUTION INSTRUCTIONS FOR THE CODING AGENT
+==================================================
+
+Start by inspecting the available project files and existing architecture. Preserve working code unless there is a clear reason to change it.
+
+Then:
+1. Present a concise implementation plan and proposed repository structure.
+2. Identify the required provider credentials and service dependencies.
+3. Establish the database schema and application foundation.
+4. Implement the working MVP in small, testable increments.
+5. Run migrations, type checks, linting and relevant automated tests.
+6. Fix implementation errors before moving to dependent features.
+7. Verify all external API integrations against their actual documented behavior.
+8. Document any credentials, subscriptions or manual configuration still required.
+9. Provide exact commands to run the application locally.
+10. Summarize what works and what remains incomplete.
+
+Do not stop after producing a plan or a landing page. Continue implementing the agreed scope.
+
+Do not claim tests passed unless they were actually executed successfully. Do not claim APIs are connected without verifying them. Do not substitute fabricated values for missing production data.
+
+If a paid provider or API credential is unavailable, build the adapter interface and setup documentation, test the logic with fixtures, and clearly mark that integration as awaiting configuration.
+
+Prioritize a reliable MVP over superficial feature completeness.
+
+The final result should be a maintainable, secure and commercially extensible cryptocurrency intelligence platform that helps users interpret market conditions while clearly communicating uncertainty and risk.
+
+END OF MASTER PROMPT
+
+# PROJECT: CryptoPulse Intelligence
+## Full-Stack Crypto Market Intelligence and Trading Signals SaaS
+
+Act as a senior software architect, full-stack engineer, quantitative researcher, data engineer, cybersecurity engineer, and product designer.
+
+Build a production-oriented, full-stack cryptocurrency intelligence platform called CryptoPulse Intelligence. The platform must combine crypto news, ETF flow analytics, centralized exchange (CEX) liquidity, derivatives data, technical analysis, AI-assisted market interpretation, and explainable trading signals.
+
+This is a real application project, not just a landing page or static dashboard. Implement working database persistence, real API integrations, authentication, background jobs, subscription entitlements, analytics, tests, and deployment documentation.
+
+Do not claim a feature is working until its implementation has been tested. When credentials or provider access are unavailable, provide a clearly labeled demo mode and an explicit setup path rather than inventing data.
+
+==================================================
+1. PRODUCT GOALS
+==================================================
+
+Build a platform with these objectives:
+
+1. Provide a public cryptocurrency market dashboard.
+2. Aggregate and categorize reputable crypto and macroeconomic news.
+3. Track US spot Bitcoin and Ethereum ETF flows and fund-level data.
+4. Monitor CEX order books, spreads, market depth and liquidity imbalances.
+5. Analyze derivatives funding rates, open interest and liquidations.
+6. Generate explainable LONG, SHORT and NEUTRAL signals.
+7. Combine technical indicators, ETF flows, order-book liquidity, derivatives and AI-assisted news analysis.
+8. Provide backtesting, paper trading, alerts and strategy analytics.
+9. Offer premium subscriptions with server-enforced feature access.
+10. Provide an admin panel for data sources, users, subscriptions, assets, signals and system health.
+
+Initial asset coverage:
+- Bitcoin (BTC)
+- Ethereum (ETH)
+- Solana (SOL)
+- Configurable major altcoins, including XRP, BNB, DOGE, LINK and other liquid assets supported by selected providers.
+
+Support configurable spot and perpetual-futures markets. Clearly identify the exchange, market type, quote currency and instrument symbol for each dataset.
+
+The initial product is an analytics and research platform. Do not enable live order execution by default.
+
+==================================================
+2. USER ROLES AND SUBSCRIPTIONS
+==================================================
+
+Implement three roles:
+
+A. Public visitor
+- Access public market overview.
+- Read permitted news articles and summaries.
+- View selected price charts and market statistics.
+- View a limited number of signals with appropriately disclosed delays or restrictions.
+- View public educational content and methodology documentation.
+- Register and subscribe to premium plans.
+
+B. Premium member
+- Access detailed ETF flow dashboards.
+- Access advanced liquidity and derivatives analytics.
+- View full signal rationales, entry zones and risk levels.
+- Configure watchlists, filters and alert thresholds.
+- Receive email and optional Telegram notifications.
+- Access historical signal performance and eligible backtesting features.
+- Save preferred assets and timeframes.
+- View personal alert and signal history.
+
+C. Administrator
+- Manage users, roles, plans and subscription entitlements.
+- Configure market data and news providers.
+- Inspect ingestion status, failed jobs and data freshness.
+- Manage asset listings and signal thresholds.
+- Review system logs and audit events.
+- Control feature flags, rate limits and maintenance mode.
+- Reprocess failed ingestion jobs.
+- View subscription and usage analytics.
+
+Use explicit server-side authorization for every protected API and operation. Hiding a button in the frontend is not authorization.
+
+Suggested plans:
+- Free: market overview, basic news and delayed or limited analytics.
+- Pro: complete market analytics, detailed signals and alerts.
+- Premium: advanced liquidity analytics, custom watchlists, expanded historical analysis and additional strategy tools.
+
+Make prices, billing periods, usage limits and entitlements configurable. Do not hardcode subscription prices throughout the application.
+
+==================================================
+3. REQUIRED PAGES AND USER INTERFACE
+==================================================
+
+Create a responsive, professional institutional trading-terminal interface.
+
+Visual direction:
+- Dark navy/charcoal background.
+- Clean typography and compact data tables.
+- Green for positive movements, red for negative movements and neutral gray for unavailable data.
+- Accessible contrast and keyboard navigation.
+- Responsive layouts for desktop, tablet and mobile.
+- Interactive charts, sortable tables, filters, tooltips and date selectors.
+- Consistent loading, empty, stale-data and error states.
+
+Required routes:
+
+/
+Public landing page, product introduction, market highlights, feature overview, pricing and calls to action.
+
+/dashboard
+Market overview with BTC, ETH, SOL and selected altcoins; market capitalization; trading volume; market breadth; volatility; sentiment; ETF flows; recent news; liquidity alerts; and active signals.
+
+/markets
+Searchable asset list, prices, percentage changes, volume, volatility and market charts.
+
+/markets/[symbol]
+Asset detail page with candlestick charts, technical indicators, market structure, trading volume, multi-timeframe analysis and related signals.
+
+/news
+Searchable, filterable news feed with categories, sources, timestamps, AI summaries and market relevance.
+
+/news/[slug]
+News detail or attributed source summary with the original publisher link, related stories, extracted entities and a clearly labeled impact assessment.
+
+/etf-flows
+Daily BTC and ETH ETF flows, individual fund breakdowns, cumulative flows, date filters, historical comparisons and flow-versus-price charts.
+
+/liquidity
+CEX order-book depth, bid-ask spreads, order-book imbalance, liquidity changes and exchange comparisons.
+
+/derivatives
+Funding rates, open interest, futures basis, long/short metrics and liquidation history.
+
+/signals
+Signal feed with asset, direction, timeframe, entry zone, stop-loss, targets, confidence, risk/reward, status and supporting evidence.
+
+/signals/[id]
+Detailed signal thesis, indicator readings, relevant news, ETF flow context, liquidity evidence, invalidation conditions and subsequent outcome tracking.
+
+/backtesting
+Strategy configuration, historical simulation, equity curves, performance statistics, cost assumptions and out-of-sample results.
+
+/watchlists
+Saved assets, custom filters and personalized alerts.
+
+/pricing
+Plan comparison, billing intervals, feature entitlements and subscription management.
+
+/account
+Profile, security, watchlists, notification preferences, billing and connected services.
+
+/admin
+Protected administrative workspace for data sources, users, plans, ingestion jobs, system health and audit history.
+
+Use reusable components, consistent route layouts, server-side data fetching where appropriate and client-side interactivity for charts and filters.
+
+==================================================
+4. DATA PROVIDERS AND INTEGRATIONS
+==================================================
+
+Create a modular provider architecture. Never couple business logic directly to a single vendor's response format.
+
+Use provider interfaces such as:
+- MarketDataProvider
+- ExchangeOrderBookProvider
+- DerivativesDataProvider
+- ETFFlowProvider
+- NewsProvider
+- OnChainDataProvider
+- NotificationProvider
+- BillingProvider
+
+Every provider adapter must normalize data into internal schemas, validate responses, record source timestamps and handle failures.
+
+A. Market prices and candles
+
+Evaluate:
+- Binance public market data and WebSocket streams.
+- Coinbase market data.
+- CoinGecko market data.
+- Other licensed aggregators where historical coverage or multi-exchange normalization is required.
+
+Collect:
+- Last price and bid/ask where available.
+- OHLCV candles.
+- Trading volume.
+- Exchange and instrument metadata.
+- Historical price series.
+- Asset metadata and supported trading pairs.
+
+Use WebSockets for supported live streams and REST endpoints for historical queries, reconciliation and backfills.
+
+B. ETF flow data
+
+Evaluate:
+- Official ETF issuer disclosures.
+- Relevant exchange and regulatory filings.
+- Reputable ETF flow datasets and financial data vendors.
+- Licensed aggregators offering historical fund-level flow data.
+
+Collect, when available:
+- Fund name and ticker.
+- Underlying asset.
+- Trading date.
+- Daily net flow.
+- Reported shares outstanding.
+- Net assets or AUM.
+- NAV and market price, where applicable.
+- Reporting status and publication timestamp.
+- Original source and methodology.
+
+Important:
+- Do not assume that all official issuer websites provide standardized daily flow APIs.
+- Use a documented vendor adapter or carefully validated source-specific ingestion process.
+- Do not infer exact flows solely from asset-price changes.
+- Do not equate ETF trading volume with net creations or redemptions.
+- Store preliminary and finalized observations separately where appropriate.
+- Do not label an estimate as an official reported figure.
+- Record methodology and source attribution for all derived estimates.
+
+Display the observation date separately from the ingestion timestamp. Clearly disclose missing, delayed, estimated and revised data.
+
+C. CEX liquidity
+
+Initially support selected venues such as Binance, Coinbase, OKX, Bybit and Kraken, subject to actual API availability, jurisdiction, rate limits and product support.
+
+Collect supported data:
+- Best bid and ask.
+- Mid-price and spread.
+- Order-book snapshots and incremental updates.
+- Bid and ask depth at configurable basis-point distances.
+- Order-book imbalance.
+- Trades and trade volume.
+- Cross-exchange price differences.
+- Liquidity changes and concentration.
+- Historical snapshots for backtesting.
+
+Calculate:
+mid_price = (best_bid + best_ask) / 2
+
+spread_bps = ((best_ask - best_bid) / mid_price) * 10000
+
+bid_depth_usd = sum(bid_price * bid_quantity) over qualifying bid levels
+
+ask_depth_usd = sum(ask_price * ask_quantity) over qualifying ask levels
+
+depth_imbalance =
+(bid_depth_usd - ask_depth_usd) /
+(bid_depth_usd + ask_depth_usd)
+
+Use consistent depth thresholds and quote-currency normalization.
+
+Label the precise depth definition, such as within 10, 25 or 50 basis points of mid-price. Do not combine incompatible exchanges or instruments without normalization.
+
+A visible order book is not proof of executable liquidity. Large orders can be canceled, and displayed depth may not represent hidden liquidity.
+
+D. Derivatives
+
+Evaluate exchange-native futures APIs and licensed derivatives analytics providers.
+
+Collect, where supported:
+- Funding rates and funding intervals.
+- Open interest.
+- Futures basis.
+- Liquidation events or aggregated liquidation statistics.
+- Long/short ratios with documented definitions.
+- Contract specifications and mark/index prices.
+
+Keep each exchange's instrument type and methodology identifiable. Do not combine different units or definitions without normalization.
+
+E. News
+
+Evaluate:
+- Licensed news APIs.
+- Publisher RSS feeds where permitted.
+- Official project and exchange announcements.
+- Regulatory and central-bank releases.
+- Public company and ETF disclosures.
+
+Store:
+- Headline and original URL.
+- Publisher.
+- Publication timestamp.
+- Ingestion timestamp.
+- Language and category.
+- Asset and entity tags.
+- Content license or source type.
+- Short summary, where permitted.
+- Sentiment and potential impact assessments.
+- Duplicate-cluster identifier.
+
+Respect publisher licensing, API terms, copyright and attribution. Do not republish full copyrighted articles without authorization.
+
+F. On-chain data
+
+Optionally integrate a reputable blockchain analytics provider for:
+- Exchange inflows and outflows.
+- Exchange reserves.
+- Stablecoin supply and transfers.
+- Whale transaction monitoring.
+
+Clearly disclose that exchange-wallet labels are estimates and that incomplete wallet attribution can distort inferred exchange flows.
+
+G. Provider selection
+
+Before finalizing each provider, document:
+- Available endpoints.
+- Authentication requirements.
+- Historical coverage.
+- Update frequency.
+- Rate limits.
+- Pricing and usage restrictions.
+- Attribution and redistribution requirements.
+- Supported assets and exchanges.
+
+Build the application so an unavailable provider can be replaced without rewriting the UI or signal engine.
+
+Use mock data only in explicitly labeled development/demo mode.
+
+==================================================
+5. DATA INGESTION AND PROCESSING ARCHITECTURE
+==================================================
+
+Implement a reliable data pipeline.
+
+Suggested workflow:
+
+Exchange REST/WebSocket APIs
+    -> Provider adapters
+    -> Validation and normalization
+    -> Event queue or scheduled job runner
+    -> PostgreSQL and time-series storage
+    -> Derived metrics and feature calculations
+    -> Signal engine
+    -> Cached API responses
+    -> Frontend dashboards and alerts
+
+Implement:
+- Scheduled jobs for ETF flows and news.
+- WebSocket consumers for supported market data.
+- Periodic REST reconciliation.
+- Retry with exponential backoff and jitter.
+- Idempotent ingestion.
+- Deduplication.
+- Provider-specific rate limiting.
+- Data freshness tracking.
+- Dead-letter handling for repeated failures.
+- Structured logs and metrics.
+- Historical backfills.
+- Graceful degradation when providers fail.
+
+Do not make the main dashboard wait for every provider. Return available data promptly and identify missing components.
+
+Use separate freshness thresholds for prices, order books, derivatives, news and ETF data.
+
+When required data is stale, disable affected signals rather than silently substituting old values.
+
+==================================================
+6. DATABASE SCHEMA
+==================================================
+
+Use PostgreSQL as the primary relational database. Use TimescaleDB for high-volume time-series data if the deployment supports it and the operational cost is justified.
+
+Create migrations, indexes, foreign keys, constraints and appropriate retention policies.
+
+Core tables:
+
+users
+- id UUID PRIMARY KEY
+- email UNIQUE NOT NULL
+- password_hash if password authentication is used
+- display_name
+- role
+- email_verified_at
+- created_at
+- updated_at
+
+auth_sessions
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- token_hash
+- expires_at
+- created_at
+
+plans
+- id UUID PRIMARY KEY
+- name
+- billing_interval
+- price_amount
+- currency
+- provider_price_id
+- is_active
+- created_at
+
+subscriptions
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- plan_id UUID REFERENCES plans(id)
+- billing_provider
+- provider_customer_id
+- provider_subscription_id
+- status
+- current_period_start
+- current_period_end
+- cancel_at_period_end
+- created_at
+- updated_at
+
+subscription_events
+- id UUID PRIMARY KEY
+- subscription_id UUID REFERENCES subscriptions(id)
+- provider_event_id UNIQUE
+- event_type
+- payload_json
+- processed_at
+- created_at
+
+assets
+- id UUID PRIMARY KEY
+- symbol
+- name
+- canonical_asset_id
+- network
+- is_active
+- metadata_json
+- created_at
+
+instruments
+- id UUID PRIMARY KEY
+- asset_id UUID REFERENCES assets(id)
+- exchange
+- exchange_symbol
+- market_type
+- quote_currency
+- is_active
+- metadata_json
+
+market_candles
+- instrument_id UUID REFERENCES instruments(id)
+- timeframe
+- open_time
+- close_time
+- open
+- high
+- low
+- close
+- volume
+- quote_volume
+- source
+- ingested_at
+
+Use a composite unique key on instrument_id, timeframe and open_time.
+
+market_tickers
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- price
+- bid
+- ask
+- volume_24h
+- change_24h
+- observed_at
+- ingested_at
+- source
+
+orderbook_snapshots
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- exchange
+- bids_json
+- asks_json
+- sequence_id
+- mid_price
+- spread_bps
+- bid_depth_json
+- ask_depth_json
+- imbalance
+- observed_at
+- ingested_at
+
+Persist raw book snapshots only at an appropriate sampling frequency. Store incremental events or derived features where full snapshots would be too expensive.
+
+derivatives_metrics
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- funding_rate
+- open_interest
+- open_interest_unit
+- futures_basis
+- liquidation_long_usd
+- liquidation_short_usd
+- observed_at
+- source
+
+etf_funds
+- id UUID PRIMARY KEY
+- ticker
+- fund_name
+- underlying_asset_id UUID REFERENCES assets(id)
+- issuer
+- is_active
+
+etf_flow_observations
+- id UUID PRIMARY KEY
+- fund_id UUID REFERENCES etf_funds(id)
+- observation_date
+- net_flow_usd
+- aum_usd
+- nav
+- shares_outstanding
+- publication_status
+- source
+- source_url
+- observed_at
+- ingested_at
+- methodology_version
+
+Use a unique key appropriate to the fund, observation date and source/version. Support corrections without silently overwriting source history.
+
+news_articles
+- id UUID PRIMARY KEY
+- canonical_url UNIQUE
+- title
+- publisher
+- published_at
+- ingested_at
+- category
+- language
+- summary
+- source_type
+- content_rights
+- metadata_json
+
+news_asset_mentions
+- article_id UUID REFERENCES news_articles(id)
+- asset_id UUID REFERENCES assets(id)
+- relevance_score
+- sentiment_score
+- impact_score
+
+technical_features
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- timeframe
+- candle_time
+- ema_20
+- ema_50
+- ema_200
+- rsi_14
+- macd
+- macd_signal
+- atr_14
+- vwap
+- feature_version
+
+signals
+- id UUID PRIMARY KEY
+- instrument_id UUID REFERENCES instruments(id)
+- timeframe
+- direction
+- entry_min
+- entry_max
+- stop_loss
+- take_profit_1
+- take_profit_2
+- take_profit_3
+- confidence_score
+- risk_reward
+- methodology_version
+- rationale_json
+- status
+- created_at
+- expires_at
+- invalidated_at
+
+signal_features
+- id UUID PRIMARY KEY
+- signal_id UUID REFERENCES signals(id)
+- feature_name
+- feature_value
+- normalized_score
+- source
+- observed_at
+
+signal_outcomes
+- id UUID PRIMARY KEY
+- signal_id UUID REFERENCES signals(id)
+- evaluation_window
+- entry_fill_assumption
+- exit_reason
+- gross_return
+- net_return
+- max_favorable_excursion
+- max_adverse_excursion
+- fees
+- slippage
+- evaluated_at
+
+watchlists
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- name
+- created_at
+
+watchlist_assets
+- watchlist_id UUID REFERENCES watchlists(id)
+- asset_id UUID REFERENCES assets(id)
+
+alerts
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- alert_type
+- configuration_json
+- channels_json
+- enabled
+- cooldown_seconds
+- last_triggered_at
+- created_at
+
+notifications
+- id UUID PRIMARY KEY
+- user_id UUID REFERENCES users(id)
+- alert_id UUID REFERENCES alerts(id)
+- event_type
+- payload_json
+- status
+- sent_at
+- created_at
+
+data_provider_configs
+- id UUID PRIMARY KEY
+- provider_name
+- provider_type
+- enabled
+- public_config_json
+- secret_reference
+- last_success_at
+- last_error_at
+- health_status
+
+ingestion_runs
+- id UUID PRIMARY KEY
+- provider_name
+- job_type
+- started_at
+- completed_at
+- status
+- records_processed
+- records_failed
+- error_summary
+
+audit_logs
+- id UUID PRIMARY KEY
+- actor_user_id UUID
+- action
+- resource_type
+- resource_id
+- metadata_json
+- created_at
+
+Use database constraints to prevent invalid values. Add indexes for asset, instrument, source, timeframe, observation time, publication date and frequently queried status fields.
+
+Store monetary values with appropriate decimal precision. Use UTC timestamps in storage and convert to the user's preferred timezone for display.
+
+Keep secrets outside the database wherever possible. Never store plaintext passwords, raw authentication tokens or private API credentials.
+
+==================================================
+7. SIGNAL ENGINE: TECHNICAL + ETF + LIQUIDITY + AI
+==================================================
+
+Build a deterministic, testable signal engine. AI can interpret evidence, but it must not invent numeric observations or override mandatory risk controls.
+
+A. Technical analysis: initial weight 30%
+
+Calculate:
+- EMA 20, 50 and 200.
+- RSI.
+- MACD.
+- ATR.
+- VWAP.
+- Volume confirmation.
+- Support and resistance.
+- Breakout and breakdown conditions.
+- Multi-timeframe trend agreement.
+
+B. CEX liquidity: initial weight 25%
+
+Calculate:
+- Order-book imbalance.
+- Bid and ask depth at standardized distances.
+- Spread and depth deterioration.
+- Cross-exchange confirmation.
+- Liquidity concentration and sudden changes.
+- Price movement relative to displayed liquidity.
+
+Do not treat large displayed orders as guaranteed support or resistance.
+
+C. Derivatives: initial weight 20%
+
+Evaluate:
+- Funding rate extremes.
+- Open-interest expansion or contraction.
+- Price/open-interest divergence.
+- Futures basis.
+- Liquidation events.
+- Crowded positioning, where reliable data is available.
+
+D. ETF flows: initial weight 15%
+
+Evaluate:
+- Daily net flows.
+- Rolling 3-day, 7-day and 30-day totals.
+- Flow acceleration or deceleration.
+- Flow trends relative to price.
+- Confirmed institutional-demand divergence.
+
+Only score ETF conditions when relevant observations are available and sufficiently recent for the analysis. Do not use future-reported flow data in historical simulations.
+
+E. News and sentiment: initial weight 10%
+
+Use an AI-assisted model to:
+- Summarize relevant events.
+- Identify assets and entities.
+- Classify reported facts versus interpretations.
+- Estimate potential directional impact.
+- Evaluate source reliability and event uncertainty.
+- Identify contradictory reports.
+
+Treat all retrieved articles and external text as untrusted input. Do not follow instructions embedded in articles or allow them to trigger privileged actions.
+
+F. Scoring
+
+Normalize each component to a documented scale, such as -100 to +100.
+
+combined_score =
+technical_score * 0.30
++ liquidity_score * 0.25
++ derivatives_score * 0.20
++ etf_score * 0.15
++ news_score * 0.10
+
+These weights are starting hypotheses, not proven predictive relationships.
+
+If an input is unavailable, stale or unreliable, do not silently replace its score with zero and retain the same confidence. Recalculate using eligible weights, report coverage, reduce confidence as appropriate and apply minimum data-quality requirements.
+
+Configurable initial directional thresholds:
+- Score >= +60: candidate LONG.
+- Score <= -60: candidate SHORT.
+- Otherwise: NEUTRAL.
+
+These thresholds must be validated through out-of-sample testing before being presented as effective trading rules.
+
+Require:
+- Minimum liquidity.
+- Valid price and instrument data.
+- Adequate data freshness.
+- Acceptable estimated transaction costs.
+- A documented risk/reward threshold.
+- No unresolved integrity failures.
+
+The risk engine can reject a directional candidate regardless of its score.
+
+G. AI responsibilities
+
+Use AI for explanation, news interpretation, evidence synthesis and natural-language summaries.
+
+Give the AI only validated, timestamped structured inputs and relevant licensed text.
+
+Require structured outputs validated against a schema, for example:
+- market_summary
+- directional_bias
+- supporting_evidence
+- contradictory_evidence
+- relevant_news
+- key_risks
+- invalidation_conditions
+- missing_data
+- summary_generated_at
+
+AI must not invent prices, indicators, ETF flows, entry prices or confidence scores.
+
+Calculate numeric values using deterministic code. Validate every AI output before display.
+
+If the AI provider is unavailable, continue serving deterministic signals where their required inputs remain valid.
+
+H. Signal lifecycle
+
+Use statuses such as:
+- CANDIDATE
+- ACTIVE
+- TRIGGERED
+- TARGET_PARTIAL
+- TARGET_COMPLETE
+- STOPPED
+- INVALIDATED
+- EXPIRED
+
+Define transition rules explicitly.
+
+Distinguish a theoretical signal from an executable trade. Define how entry-zone fills, partial exits, stop-losses and overlapping signals are evaluated.
+
+Persist the input feature snapshot and methodology version for every published signal.
+
+==================================================
+8. RISK MANAGEMENT AND PERFORMANCE
+==================================================
+
+Every directional signal must contain:
+- Asset and exchange/instrument.
+- Direction and timeframe.
+- Entry zone.
+- Stop-loss or invalidation level.
+- Take-profit levels.
+- Risk/reward calculation.
+- Confidence score and methodology.
+- Data coverage and freshness.
+- Creation and expiration timestamps.
+- Supporting and contradictory evidence.
+
+Use ATR or another documented volatility method to inform risk levels.
+
+Do not issue a directional signal when its required inputs are unavailable or its invalidation conditions cannot be defined.
+
+Provide optional position-size calculations based on user-entered account equity and risk percentage. Do not require users to connect a brokerage account.
+
+Backtesting requirements:
+- Include trading fees, slippage and funding where applicable.
+- Avoid look-ahead bias.
+- Use only information available at the simulated decision time.
+- Account for realistic entry fills and unfilled orders.
+- Separate training, validation and test periods.
+- Support walk-forward validation.
+- Include delisted assets where data is available to reduce survivorship bias.
+- Report sample size and uncertainty.
+
+Display:
+- Win rate.
+- Average win and loss.
+- Expectancy.
+- Profit factor.
+- Maximum drawdown.
+- Net returns.
+- Sharpe ratio where meaningful.
+- Trade count.
+- Fees and funding costs.
+- Performance by asset and timeframe.
+
+Never imply that a historical backtest guarantees future results.
+
+==================================================
+9. API DESIGN
+==================================================
+
+Use versioned API routes with validation and consistent error responses.
+
+Public endpoints:
+GET /api/v1/health
+GET /api/v1/markets
+GET /api/v1/markets/[symbol]
+GET /api/v1/markets/[symbol]/candles
+GET /api/v1/news
+GET /api/v1/etf-flows/summary
+GET /api/v1/signals/public
+
+Premium endpoints:
+GET /api/v1/etf-flows/funds
+GET /api/v1/liquidity/orderbook
+GET /api/v1/liquidity/depth
+GET /api/v1/derivatives
+GET /api/v1/signals
+GET /api/v1/signals/[id]
+GET /api/v1/backtests
+POST /api/v1/backtests
+GET /api/v1/watchlists
+POST /api/v1/watchlists
+POST /api/v1/alerts
+
+Account endpoints:
+GET /api/v1/account
+GET /api/v1/account/subscription
+POST /api/v1/billing/checkout
+POST /api/v1/billing/portal
+POST /api/v1/webhooks/billing
+
+Administrative endpoints:
+GET /api/v1/admin/providers
+GET /api/v1/admin/ingestion-runs
+GET /api/v1/admin/system-health
+POST /api/v1/admin/providers/[id]/test
+POST /api/v1/admin/ingestion-runs/[id]/retry
+
+Adapt route syntax to the chosen framework. Implement pagination, filtering, sorting, schema validation, authorization, rate limiting and appropriate caching.
+
+Never expose secrets or internal stack traces in API responses.
+
+==================================================
+10. TECHNOLOGY STACK
+==================================================
+
+Preferred stack:
+
+Frontend:
+- Next.js with App Router.
+- React and TypeScript.
+- Tailwind CSS.
+- A consistent accessible component library.
+- Lightweight Charts or another suitable financial charting library.
+
+Backend:
+- Next.js server routes for application APIs.
+- Python FastAPI for quantitative calculations and independent data-processing services where appropriate.
+- Pydantic or equivalent validation for Python service contracts.
+
+Database:
+- PostgreSQL.
+- TimescaleDB if justified for time-series workloads.
+- Redis for caching, distributed rate limiting and job coordination where appropriate.
+
+Background processing:
+- A durable job queue such as Celery with Redis or a managed queue.
+- Scheduled ingestion jobs.
+- Dedicated WebSocket consumers for supported exchanges.
+- Idempotent tasks and retry handling.
+
+Authentication:
+- A maintained authentication library or trusted identity provider.
+- Secure server-side sessions.
+- Email verification and password reset if passwords are supported.
+- Optional MFA for administrators.
+
+Payments:
+- Stripe or another suitable subscription provider.
+- Hosted checkout where possible.
+- Signed webhook verification.
+- Idempotent subscription event handling.
+- Server-side entitlement synchronization.
+
+Notifications:
+- Email provider.
+- Optional Telegram bot.
+- Browser notifications with explicit permission.
+
+Deployment:
+- Web application on a suitable managed hosting platform.
+- PostgreSQL and Redis on managed services where practical.
+- Background workers deployed separately from the frontend.
+- Centralized logs, monitoring, backups and error reporting.
+
+Keep the architecture modular. Do not add unnecessary microservices before the MVP requires them.
+
+==================================================
+11. SECURITY AND PRIVACY
+==================================================
+
+Implement:
+- Server-side role and subscription checks.
+- Secure session cookies.
+- CSRF protection where applicable.
+- Strict input validation.
+- Output encoding.
+- Content Security Policy.
+- Rate limiting.
+- SQL injection protection through parameterized queries or a safe ORM.
+- SSRF protection for any URL ingestion service.
+- Webhook signature verification.
+- Secrets management.
+- Dependency scanning.
+- Audit logging for sensitive administrative actions.
+- Database least-privilege permissions.
+- Automated backups and recovery testing.
+- Appropriate personal-data retention and deletion workflows.
+
+Never:
+- Put secret provider keys in client-side code.
+- Trust client-submitted subscription status.
+- Allow untrusted news or AI text to execute code.
+- Store exchange trading credentials unnecessarily.
+- Grant withdrawal permissions to any integration.
+- Execute live trades without explicit user authorization and appropriate safeguards.
+
+Use read-only market data credentials wherever possible.
+
+==================================================
+12. RELIABILITY AND OBSERVABILITY
+==================================================
+
+Implement a provider health dashboard showing:
+- Provider status.
+- Last successful fetch.
+- Latest observation timestamp.
+- Ingestion delay.
+- API quota or rate-limit status where available.
+- Consecutive failures.
+- Records processed and rejected.
+- Last error summary.
+
+Use explicit states:
+- LIVE: within a configured freshness threshold.
+- DELAYED: data exists but is older than the expected threshold.
+- STALE: data is too old for the intended calculation.
+- UNAVAILABLE: no usable observation exists.
+- ESTIMATED: derived value, with methodology disclosed.
+
+Define freshness thresholds per metric rather than using one global threshold.
+
+The UI must never imply that ETF data is live simply because price data is live.
+
+Add structured logging, error monitoring, queue monitoring and operational alerts.
+
+==================================================
+13. DEVELOPMENT MILESTONES
+==================================================
+
+Phase 1 — Foundation
+- Create repository structure and development documentation.
+- Set up Next.js, TypeScript, Tailwind and the database.
+- Implement migrations, seed data, authentication and authorization.
+- Create reusable UI components and application layouts.
+- Establish environment configuration and automated tests.
+
+Acceptance criteria:
+The application starts locally, migrations run successfully, users can register or sign in, and protected routes enforce access control.
+
+Phase 2 — Live market data
+- Implement exchange provider adapters.
+- Ingest BTC, ETH, SOL and supported altcoin prices.
+- Add candles, market overview and interactive charts.
+- Implement WebSocket updates where supported.
+- Add caching, retry logic, timestamps and provider health monitoring.
+
+Acceptance criteria:
+Prices and charts come from configured real providers, timestamps are visible, and provider failures are handled without fabricating values.
+
+Phase 3 — News and ETF flows
+- Implement news ingestion and deduplication.
+- Add categories, asset tags, summaries and source links.
+- Implement fund metadata and daily ETF flow ingestion.
+- Add daily and cumulative flow charts.
+- Add data-quality and reporting-status labels.
+
+Acceptance criteria:
+Users can filter news and ETF records, trace observations to sources and identify delayed, preliminary or missing data.
+
+Phase 4 — Liquidity and derivatives
+- Add order-book snapshots and normalized depth calculations.
+- Implement spreads, imbalance and exchange comparisons.
+- Add funding, open interest, futures basis and supported liquidation metrics.
+- Build historical feature storage and freshness validation.
+
+Acceptance criteria:
+Liquidity metrics have documented units and calculation methods. Inconsistent instruments and stale order books are not silently combined.
+
+Phase 5 — Signals and AI
+- Implement technical indicators.
+- Implement the weighted scoring model.
+- Add data-quality gates, risk controls and signal lifecycle management.
+- Integrate AI summaries using validated structured inputs.
+- Add signal history and supporting evidence.
+
+Acceptance criteria:
+Every published signal is reproducible from stored inputs and a methodology version. Missing required data prevents an unsupported signal from being published.
+
+Phase 6 — Membership and billing
+- Build pricing pages and configurable subscription plans.
+- Integrate hosted checkout and billing webhooks.
+- Implement premium entitlements and account management.
+- Add watchlists, email alerts and optional Telegram notifications.
+
+Acceptance criteria:
+Premium features are protected server-side, subscription changes are processed idempotently, and unauthorized requests cannot access paid endpoints.
+
+Phase 7 — Backtesting and quality assurance
+- Implement realistic historical simulations.
+- Add fees, slippage and funding assumptions.
+- Add performance metrics and out-of-sample validation.
+- Test for look-ahead bias, duplicate signals and invalid state transitions.
+- Conduct load, security and failure-recovery testing.
+
+Acceptance criteria:
+Backtests are reproducible, limitations are documented and hypothetical performance is clearly distinguished from live results.
+
+Phase 8 — Production launch
+- Configure production infrastructure.
+- Set up secrets, monitoring, backups and alerting.
+- Run database migration and recovery tests.
+- Validate billing, authentication, access control and provider integrations.
+- Publish documentation and operational runbooks.
+
+Acceptance criteria:
+A fresh deployment can be completed from documented instructions, critical integrations have health checks and failures produce actionable logs.
+
+==================================================
+14. REQUIRED TESTS
+==================================================
+
+Write automated unit, integration and end-to-end tests for:
+- Indicator calculations and candle boundaries.
+- Order-book imbalance and spread calculations.
+- ETF net flow aggregation and corrections.
+- Missing and stale data handling.
+- Signal score normalization.
+- Signal lifecycle transitions.
+- AI response schema validation.
+- Subscription entitlement enforcement.
+- Payment webhook signature verification and idempotency.
+- Authentication and authorization.
+- API rate limits.
+- Ingestion retries and duplicate records.
+- Historical backtesting without look-ahead bias.
+- Database migrations and indexes.
+
+Include representative fixture data, but keep all fixture data clearly separated from production datasets.
+
+==================================================
+15. REQUIRED DELIVERABLES
+==================================================
+
+Deliver:
+1. A working full-stack application.
+2. Complete source code and a clear repository structure.
+3. Database migrations and development seed scripts.
+4. Provider adapters with documented setup requirements.
+5. Functional market, news, ETF, liquidity and signals dashboards.
+6. Authentication, roles and premium subscription controls.
+7. Signal engine and documented scoring methodology.
+8. Background jobs and ingestion monitoring.
+9. Unit, integration and end-to-end tests.
+10. .env.example with variable names and placeholder values only.
+11. Docker Compose or equivalent local development instructions where appropriate.
+12. Deployment guide and database backup/restore instructions.
+13. API documentation.
+14. Security and data-source documentation.
+15. An implementation status report identifying completed, tested, blocked and unimplemented features.
+
+==================================================
+16. EXECUTION INSTRUCTIONS FOR THE CODING AGENT
+==================================================
+
+Start by inspecting the available project files and existing architecture. Preserve working code unless there is a clear reason to change it.
+
+Then:
+1. Present a concise implementation plan and proposed repository structure.
+2. Identify the required provider credentials and service dependencies.
+3. Establish the database schema and application foundation.
+4. Implement the working MVP in small, testable increments.
+5. Run migrations, type checks, linting and relevant automated tests.
+6. Fix implementation errors before moving to dependent features.
+7. Verify all external API integrations against their actual documented behavior.
+8. Document any credentials, subscriptions or manual configuration still required.
+9. Provide exact commands to run the application locally.
+10. Summarize what works and what remains incomplete.
+
+Do not stop after producing a plan or a landing page. Continue implementing the agreed scope.
+
+Do not claim tests passed unless they were actually executed successfully. Do not claim APIs are connected without verifying them. Do not substitute fabricated values for missing production data.
+
+If a paid provider or API credential is unavailable, build the adapter interface and setup documentation, test the logic with fixtures, and clearly mark that integration as awaiting configuration.
+
+Prioritize a reliable MVP over superficial feature completeness.
+
+The final result should be a maintainable, secure and commercially extensible cryptocurrency intelligence platform that helps users interpret market conditions while clearly communicating uncertainty and risk.
+
+END OF MASTER PROMPT

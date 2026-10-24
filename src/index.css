@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+@layer utilities {
+  @keyframes sathukaFloat {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-14px) rotate(1.5deg);
+    }
+  }
+
+  @keyframes sathukaFloatReverse {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(14px) rotate(-1.5deg);
+    }
+  }
+
+  @keyframes sathukaOrbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes sathukaOrbitReverse {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes sathukaPulseGlow {
+    0%, 100% {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes sathukaDrift {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.35;
+    }
+    50% {
+      transform: translate(30px, -40px) scale(1.2);
+      opacity: 0.85;
+    }
+    100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.35;
+    }
+  }
+
+  @keyframes cyberScanline {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(1000%);
+    }
+  }
+
+  @keyframes gridFlow {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 40px 40px;
+    }
+  }
+
+  @keyframes borderGlowPulse {
+    0%, 100% {
+      border-color: rgba(45, 212, 191, 0.3);
+      box-shadow: 0 0 15px rgba(45, 212, 191, 0.08);
+    }
+    50% {
+      border-color: rgba(245, 158, 11, 0.6);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+    }
+  }
+
+  .animate-sathuka-float {
+    animation: sathukaFloat 6s ease-in-out infinite;
+  }
+
+  .animate-sathuka-float-delayed {
+    animation: sathukaFloat 7s ease-in-out 1.5s infinite;
+  }
+
+  .animate-sathuka-float-reverse {
+    animation: sathukaFloatReverse 8s ease-in-out infinite;
+  }
+
+  .animate-sathuka-orbit-slow {
+    animation: sathukaOrbit 32s linear infinite;
+  }
+
+  .animate-sathuka-orbit-medium {
+    animation: sathukaOrbit 22s linear infinite;
+  }
+
+  .animate-sathuka-orbit-reverse {
+    animation: sathukaOrbitReverse 26s linear infinite;
+  }
+
+  .animate-sathuka-pulse-glow {
+    animation: sathukaPulseGlow 4s ease-in-out infinite;
+  }
+
+  .animate-sathuka-drift {
+    animation: sathukaDrift 10s ease-in-out infinite;
+  }
+
+  .animate-cyber-grid {
+    animation: gridFlow 20s linear infinite;
+  }
+
+  .animate-border-glow {
+    animation: borderGlowPulse 4s ease-in-out infinite;
+  }
+
+  /* Web3 Blockchain Isometric Grid Pattern */
+  .bg-blockchain-grid {
+    background-image: 
+      linear-gradient(to right, rgba(45, 212, 191, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(45, 212, 191, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .bg-blockchain-dots {
+    background-image: radial-gradient(rgba(45, 212, 191, 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+/* Scroll reveal smooth animation state transitions */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(0.98);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0px) scale(1);
+}
+
+.scroll-reveal-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal-left.revealed {
+  opacity: 1;
+  transform: translateX(0px);
+}
+
+.scroll-reveal-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal-right.revealed {
+  opacity: 1;
+  transform: translateX(0px);
+}

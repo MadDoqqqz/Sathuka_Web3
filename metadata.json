@@ -1,0 +1,6 @@
+{
+  "name": "CryptoPulse Intelligence",
+  "description": "Institutional cryptocurrency market intelligence, ETF flow analytics, CEX order-book liquidity, derivatives metrics, and explainable AI signals powered by Sathuka Web3 Community.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
